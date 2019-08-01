@@ -1,11 +1,16 @@
 package com.example.controller;
 
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.domain.Exam02Number;
 import com.example.form.Exam02Form;
+import com.example.servise.Exam02Service;
 
 @Controller
 @RequestMapping("/exam02")
@@ -16,17 +21,26 @@ public class Exam02Controller {
 		return new Exam02Form();
 	}
 	
+	@Autowired
+	private Exam02Service service;
+	
+	@Autowired
+	private HttpSession session;
+	
 	@RequestMapping("")
 	public String index() {
 		return "exam02";
 	}
 	
-	@RequestMapping("/exam02-result")
-	public String Exam02Result(Integer num1,Integer num2,Model model) {
-		model.addAttribute("num1", num1);
-		model.addAttribute("num2", num2);
-		int answer;
-		answer = num1 + num2;
+	@RequestMapping("/result")
+	public String Exam02Result(Exam02Form exam02Form) {
+		Exam02Number exam02Number = new Exam02Number();
+		exam02Number.setNum1(exam02Form.getIntNum1());
+		exam02Number.setNum2(exam02Form.getIntNum2());
+		session.setAttribute("exam02Number", exam02Number);
+		
+		int answer = service.add(exam02Form.getIntNum1(), exam02Form.getIntNum2());
+		session.setAttribute("answer", answer);
 		
 		return "exam02-result";
 	}
